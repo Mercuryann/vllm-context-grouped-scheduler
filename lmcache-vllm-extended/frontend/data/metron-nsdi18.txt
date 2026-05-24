@@ -1,0 +1,40 @@
+Metron: NFV Service Chains at the True Speed of the Underlying Hardware  
+Authors: Georgios P. Katsikas, Tom Barbette, Dejan Kostić, Rebecca Steinert, Gerald Q. Maguire Jr.
+
+[1mAbstract[0m  
+Metron is an NFV platform that fully utilizes commodity server and network resources to run stateful service chains efficiently. It achieves zero inter-core communication using smart tagging and hardware dispatching, attaining up to 100 Gbps performance on a single server.
+
+[1m1. Introduction[0m  
+NFV seeks to replace hardware middleboxes with software NFs. While beneficial, it faces performance challenges. Metron eliminates packet handovers between cores using hardware tagging and dispatching and achieves superior throughput and lower latency than OpenBox and E2.
+
+[1m2. System Architecture[0m  
+[1m2.1 Overview[0m  
+Metron identifies traffic classes, synthesizes processing graphs, and uses programmable switches and NICs to implement stateless tasks. The rest is executed on designated CPU cores, using NIC-based tags for traffic steering.
+
+[1m2.2 Data Plane[0m  
+A master-slave architecture is adopted, where the master agent manages hardware bindings and delegates processing tasks to slaves. NICs dispatch packets directly to appropriate CPU cores, improving speed.
+
+[1m2.3 Control Plane[0m  
+Graph synthesis via SNF merges NF logic, while placement and dynamic scaling strategies minimize overhead. Traffic classes are used to scale NFs efficiently without duplicating logic unnecessarily.
+
+[1m2.4 Routing and Failures[0m  
+Metron installs tagged OpenFlow rules for routing and dispatching. Backup rules support fast failover, and controller updates switches and NICs during path changes.
+
+[1m3. Evaluation[0m  
+[1m3.1 Large-Scale Deployment[0m  
+Metron performs DPI at 40 Gbps and supports stateful service chains at 100 Gbps. It outperforms OpenBox and E2 by a large margin in both latency and throughput, using fewer CPU cores.
+
+[1m3.2 Dynamic Scaling[0m  
+Metron adapts to workload changes by tagging traffic classes and redirecting them across CPU cores, offering fast and fine-grained scaling with minimal latency.
+
+[1m3.3 Deployment Micro-benchmarks[0m  
+Metron installs thousands of rules within hundreds of milliseconds, using hardware/software combination. It handles diverse switch capabilities and supports deployments across large-scale topologies efficiently.
+
+[1m4. Related Work[0m  
+Metron builds upon ideas from E2, OpenBox, SNF, and modern NIC capabilities. Unlike others, it aggressively uses hardware offloading and intelligent placement for performance.
+
+[1m5. Conclusion[0m  
+Metron demonstrates that efficient NFV service chains can be realized on commodity servers by leveraging hardware-aware placement, dispatching, and offloading strategies. It significantly outperforms state-of-the-art systems in both throughput and latency.
+
+[1m6. Acknowledgments[0m  
+Thanks to funding from the Swedish Foundation for Strategic Research and WASP.

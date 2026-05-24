@@ -1,0 +1,35 @@
+A High-Speed Load-Balancer Design with Guaranteed Per-Connection-Consistency
+Authors: Tom Barbette, Chen Tang, Haoran Yao, Dejan Kostić, Gerald Q. Maguire Jr., Panagiotis Papadimitratos, Marco Chiesa
+
+[1mAbstract[0m
+CHEETAH is a load balancer designed to achieve uniform load distribution and per-connection-consistency (PCC), two goals that are traditionally hard to achieve simultaneously. It encodes server identifiers in a cookie within packets to ensure PCC under dynamic changes in server/load balancer pools. CHEETAH works in both stateless and stateful modes and performs comparably or better than existing systems.
+
+[1m1 Introduction[0m
+Datacenters face high demand for load balancers, but current solutions often trade off PCC for uniform load distribution. This paper introduces CHEETAH, a novel system that guarantees PCC and uniform distribution without such trade-offs, using packet-embedded cookies.
+
+[1m2 Background and Motivation[0m
+Existing stateless and stateful LBs struggle with PCC and load distribution. Stateless LBs are simple but can't handle server changes without breaking connections. Stateful LBs can preserve PCC but suffer from slow hash table operations and DDoS vulnerabilities.
+
+[1m3 The CHEETAH Load Balancer[0m
+CHEETAH stores mapping information inside the packets, enabling any LB mechanism to operate without violating PCC. Stateless CHEETAH uses cookies derived via hashing and XORing, while stateful CHEETAH uses cookies to index into simplified stack-based state tables, increasing performance and resilience.
+
+[1m4 Implementation[0m
+Implemented in FastClick and P4-Tofino, CHEETAH integrates with TCP timestamp fields for cookie embedding. The system supports multiple LB strategies like round-robin, power-of-two choices, and weighted round-robin, and is backward-compatible with existing infrastructure.
+
+[1m5 Evaluation[0m
+Experiments demonstrate CHEETAH’s high efficiency. Stateless CHEETAH offers minimal overhead and achieves close to optimal load balancing with advanced strategies. It reduces flow completion times (FCT) by up to 3x and avoids PCC violations even during server pool changes.
+
+[1m6 Frequently Asked Questions[0m
+CHEETAH maintains resilience levels of existing systems, hides server count using hashed cookies, and supports multipath protocols by extending the cookie scheme.
+
+[1m7 Related Work[0m
+Prior work includes hash-based and stateful LBs like Beamer, Ananta, and Maglev. CHEETAH differentiates by decoupling PCC from LB logic and optimizing state handling.
+
+[1m8 Conclusions[0m
+CHEETAH provides a general framework for efficient and resilient LBs that support advanced mechanisms while preserving PCC. Future work includes new mechanisms and improved middlebox compatibility.
+
+[1mAppendices[0m
+A: Theoretical proof shows cookies must scale logarithmically with the number of servers.  
+B: Strategies to minimize cookie size.  
+C: Details on TCP timestamp encoding and deployment compatibility.  
+D: Empirical timestamp granularity measurements confirm CHEETAH compatibility.

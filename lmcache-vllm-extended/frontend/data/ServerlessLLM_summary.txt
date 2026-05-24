@@ -1,0 +1,34 @@
+ServerlessLLM: Low-Latency Serverless Inference for Large Language Models
+
+Abstract
+ServerlessLLM is a distributed system for low-latency serverless inference of LLMs. It leverages GPU server storage hierarchies to store model checkpoints locally, minimizing downloads and startup time. Key contributions include fast multi-tier checkpoint loading, efficient live migration of inferences, and startup-time-optimized model scheduling.
+
+1. Introduction
+LLMs are widely used in applications but present latency and resource challenges. Serverless inference reduces GPU cost but suffers from cold-start latency due to large checkpoint sizes. ServerlessLLM addresses this by exploiting GPU servers' storage capabilities for faster checkpoint loading.
+
+2. Background and Motivation
+Serverless inference is cost-efficient but causes cold starts when models must be loaded into GPUs. LLM checkpoints are large, causing delays. Current caching and provisioning solutions are inadequate for LLM scale, prompting new system designs like ServerlessLLM.
+
+3. Exploiting In-Server Multi-Tier Storage
+GPU servers have underutilized DRAM and SSDs. ServerlessLLM uses these to cache checkpoints locally, reducing download times and startup latencies. The design must manage complex storage hierarchies and locality-driven scheduling.
+
+4. Fast Multi-Tier Checkpoint Loading
+A new checkpoint format improves sequential reads and direct memory access. ServerlessLLM uses chunk-based loading, direct I/O, pinned memory, and a flexible pipeline to maximize storage bandwidth across memory tiers.
+
+5. Efficient Live Migration of LLM Inference
+Live migration reduces startup delays when moving running inferences to nodes with local checkpoints. Instead of migrating heavy KV caches, only tokens are transferred, and caches are recomputed, speeding migration and minimizing network traffic.
+
+6. Startup-Time-Optimized Model Scheduling
+ServerlessLLM's scheduler selects servers based on estimated loading or migration times. It dynamically updates server states and uses a reliable key-value store for fault tolerance. The scheduling minimizes startup latency using precise estimations of loading and migration costs.
+
+7. Evaluation
+Comprehensive benchmarks demonstrate ServerlessLLM's superior performance. It accelerates checkpoint loading by 3.6–8.2x over PyTorch and Safetensors. Compared to Ray Serve and KServe, ServerlessLLM achieves 10–200x lower inference latency under serverless workloads.
+
+8. Related Work
+ServerlessLLM builds on prior work in ML model serving, serverless cold-start reduction, and LLM serving but uniquely optimizes for LLM-specific challenges like massive checkpoint sizes and interactive inference patterns.
+
+9. Conclusion
+ServerlessLLM effectively reduces serverless inference latency for LLMs by optimizing checkpoint storage, live migration, and model scheduling. It represents a foundational step toward scalable, efficient serverless LLM deployment.
+
+10. Acknowledgments
+The authors thank collaborators, reviewers, and resource providers who contributed to the success of this project.

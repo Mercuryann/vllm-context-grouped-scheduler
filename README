@@ -1,0 +1,30 @@
+https://gpu1.eecs.kth.se/user/zeli/proxy/8501/
+
+终端1
+source ./venv/bin/activate   # 或你的 venv-wsl
+cd lmcache-server
+python3 -m lmcache_server.server 127.0.0.1 65432 /tmp/lmcache_storage
+
+终端2
+export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
+
+LMCACHE_CONFIG_FILE=lmcache-vllm-extended/configuration.yaml \
+CUDA_VISIBLE_DEVICES=0 \
+python lmcache-vllm-extended/lmcache_vllm/script.py serve \
+  Qwen/Qwen2.5-1.5B-Instruct \
+  --gpu-memory-utilization 0.6 \
+  --dtype half \
+  --port 8000 \
+  --max-model-len 2048 \
+  --guided-decoding-backend lm-format-enforcer
+
+终端3
+source ./venv/bin/activate
+cd lmcache-vllm-extended/frontend
+streamlit run frontend.py
+
+终端4（跑实验）
+source ./venv/bin/activate
+python lmcache-vllm-extended/benchmark/run_task2.py \
+  --scheduler both --diversity medium --batch-size 28 --cache-gb 0.2
+

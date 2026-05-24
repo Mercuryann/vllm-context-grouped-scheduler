@@ -1,0 +1,42 @@
+SplitRPC: A {Control + Data} Path Splitting RPC Stack for ML Inference Serving  
+Authors: Adithya Kumar, Anand Sivasubramaniam, Timothy Zhu
+
+[1mAbstract[0m  
+SplitRPC is a high-performance RPC stack designed for ML inference serving that separates the control and data paths. This design allows orchestration to remain on the CPU while data is sent directly to accelerators (e.g., GPUs), thereby reducing the RPC overhead or "RPC tax." It achieves significant improvements in latency and throughput using both commodity NICs and SmartNICs.
+
+[1m1. Introduction[0m  
+ML inference workloads increasingly use accelerators, but traditional RPC mechanisms assume CPU-based execution. SplitRPC shows that orchestration and data movement contribute heavily to latency. It separates the control (handled by CPU) and data (sent to GPU) paths to optimize efficiency.
+
+[1m2. Motivation: RPC Tax[0m  
+The shrinking execution time of ML models exposes the RPC overhead as a major performance bottleneck. Experiments demonstrate the dominance of data movement and orchestration overhead over compute time in many models. Existing SmartNIC-based solutions optimize data movement but not orchestration.
+
+[1m3. RPCs for ML Inference[0m  
+A detailed breakdown of request processing includes network stack operations, control/data path decisions, and orchestration methods. Two orchestration methods are explored: O1 (CPU-based) and O2 (GPU-based). Results show that O1 is superior for complex ML models due to better scheduling capabilities.
+
+[1m4. Tailoring RPCs for ML Inference[0m  
+Five implementation styles are presented, depending on NIC capabilities:
+- (I) Traditional CPU-based (C1, D1, O1)
+- (II/III) GPU-based (C2, D2, O2)
+- (IV/V) SplitRPC (C1, D2, O1) for P2P NICs and SmartNICs
+
+[1m5. Building SplitRPC[0m  
+Implemented as SplitRPC-pNIC and SplitRPC-sNIC. NICs are programmed to split incoming packets into control and data. Features include:
+- Scatter-gather DMA for memory placement
+- APIs for zero-copy (ZC) and tensor queue (TQ) access
+- Inference monitor for orchestrating call states
+- Support for dynamic batching with contiguous memory management
+
+[1m6. Evaluation[0m  
+SplitRPC significantly outperforms gRPC-VMA and Lynx in both latency and throughput. Using commodity P2P NICs (SplitRPC-pNIC) achieves 52% latency reduction on average. Dynamic batching yields up to 2.4× throughput gains. Under real workload traces, SplitRPC consistently provides lower tail latency.
+
+[1m7. Discussion[0m  
+Orchestration mechanisms greatly impact performance. While GPU-based orchestration (O2) works well for simple kernels, CPU-based (O1) is better for complex ML workloads. SplitRPC supports both, enabling flexible optimization. The design can also be extended to other hardware platforms.
+
+[1m8. Related Work[0m  
+Prior work in ML inference optimization and RPC frameworks did not adequately address the RPC tax. SplitRPC builds on these efforts by focusing on orchestration-aware RPC handling using commodity and programmable NICs.
+
+[1m9. Conclusion[0m  
+SplitRPC addresses the growing cost of RPC overhead in ML inference serving. Its design efficiently separates control and data paths, leveraging existing NIC hardware. The results demonstrate superior performance in real-world ML serving workloads without requiring SmartNICs.
+
+[1m10. Acknowledgements[0m  
+Acknowledges funding sources and contributors, including NSF and Intel, and participation in the DARPA-sponsored CRISP program.

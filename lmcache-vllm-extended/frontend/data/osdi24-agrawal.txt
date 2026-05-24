@@ -1,0 +1,44 @@
+Taming Throughput-Latency Tradeoff in LLM Inference with Sarathi-Serve  
+Authors: Amey Agrawal, Nitin Kedia, Ashish Panwar, Jayashree Mohan, Nipun Kwatra, Bhargav S. Gulavani, Alexey Tumanov, Ramachandran Ramjee
+
+[1mAbstract[0m  
+Sarathi-Serve is an LLM inference scheduler that introduces *chunked-prefills* and *stall-free batching* to mitigate the tradeoff between throughput and latency. By managing how prefill and decode requests are scheduled, it significantly improves both GPU utilization and response time. Compared to vLLM and Orca, it achieves up to 5.6× greater serving capacity on large models.
+
+[1m1. Introduction[0m  
+Current LLM inference systems face a tradeoff between high throughput (via batching) and low latency (for interactive use). Prefill-heavy scheduling can delay ongoing decodes (causing "generation stalls"), while decode-heavy scheduling leads to idle GPU time. Sarathi-Serve balances this tradeoff using a novel stall-free scheduling approach.
+
+[1m2. Background[0m  
+Describes transformer models, autoregressive decoding, and batching strategies. Prefill is compute-bound and benefits little from batching; decode is memory-bound and batching improves its throughput. Systems are categorized into decode-prioritizing and prefill-prioritizing schedulers. Performance is measured using TTFT, TBT, and capacity.
+
+[1m3. Motivation[0m  
+Three main challenges are identified:
+1. Decode batches suffer from low arithmetic intensity.
+2. Prioritizing prefill causes generation stalls.
+3. Pipeline parallelism introduces pipeline bubbles due to execution time variance.
+These motivate the Sarathi-Serve design.
+
+[1m4. Sarathi-Serve: Design and Implementation[0m  
+- [1m4.1 Chunked-prefills[0m: Long prompts are split into chunks, avoiding long single-iteration prefills.  
+- [1m4.2 Stall-free batching[0m: Allows decode batches to proceed with coalesced prefill chunks.  
+- [1m4.3 Token Budget[0m: Dynamically set to balance latency and overhead.  
+- [1m4.4 Implementation[0m: Built on top of vLLM with extensions for hybrid parallelism, chunking, and telemetry.
+
+[1m5. Evaluation[0m  
+Models: Mistral-7B, Yi-34B, LLaMA2-70B, Falcon-180B  
+Datasets: openchat_sharegpt4 and arxiv_summarization  
+- [1m5.1 Capacity Evaluation[0m: Sarathi-Serve achieves up to 6.3× higher throughput under strict SLOs.  
+- [1m5.2 Throughput-Latency Tradeoff[0m: Offers fine-grained control by tuning token budget.  
+- [1m5.3 Pipeline Viability[0m: Makes PP efficient by reducing pipeline bubbles using uniform compute micro-batches.  
+- [1m5.4 Ablation Study[0m: Both hybrid-batching and chunked-prefills are essential—used together, they minimize TTFT and TBT.
+
+[1m6. Related Work[0m  
+Compares Sarathi-Serve with vLLM, Orca, FastServe, and disaggregation-based systems like SplitWise and DistServe. Unlike disaggregated models, Sarathi does not require high-bandwidth interconnects and keeps computation local.
+
+[1m7. Conclusion[0m  
+Sarathi-Serve achieves high serving throughput while minimizing latency, overcoming limitations in existing schedulers by chunking prefills and using stall-free batching. It is effective across models, hardware, and scheduling strategies.
+
+[1m8. Acknowledgements[0m  
+Supported by Georgia Tech and Microsoft Research India. Sarathi-Serve’s code is open source.
+
+[1mAppendix: Artifact[0m  
+Describes how to reproduce experiments from the paper using the provided GitHub repository. Includes scripts, dataset traces, and kernel support.

@@ -1,0 +1,45 @@
+RDMA is Turing Complete, We Just Did Not Know It Yet!  
+Authors: Waleed Reda, Marco Canini, Dejan Kostić, Simon Peter
+
+[1mAbstract[0m  
+RedN is a novel framework that demonstrates RDMA's Turing completeness using self-modifying chains of RDMA verbs. It enables complex offloads like key-value lookups directly on commodity RDMA NICs (RNICs) without hardware changes. RedN offers significant latency and isolation improvements over traditional one- and two-sided RDMA systems.
+
+[1m1. Introduction[0m  
+Offloading common operations from CPUs to NICs improves performance, but RNICs traditionally only support simple verbs. RedN leverages self-modifying RDMA verbs to support conditionals and loops—enabling complex logic previously thought impractical. RedN integrates seamlessly into applications like Memcached and improves performance and resiliency.
+
+[1m2. Background[0m  
+RDMA is widely used in high-performance systems. SmartNICs provide advanced offload capabilities but are costly and harder to manage. RNICs are now powerful enough to handle complex tasks if programmed appropriately.
+
+[1m3. The RedN Computational Framework[0m  
+RedN enables conditional logic using CAS-based self-modifying WRs and loop constructs using WAIT and ENABLE verbs. It introduces "doorbell ordering" to enforce strict execution order, enabling dynamic control flow. WQ recycling allows loops without CPU intervention.
+
+[1m4. Implementation[0m  
+Implemented in ~2300 LOC, RedN uses existing RDMA libraries with custom NIC configuration. Compatible with ConnectX-3 and later NICs, RedN doesn’t require modifying drivers or RDMA libraries.
+
+[1m5. Evaluation[0m  
+[1mMicrobenchmarks[0m  
+Latency and throughput tests show RDMA verbs can execute in microseconds. Constructs like if and while loops incur modest overhead, while atomic operations are bottlenecked by PCIe latency.
+
+[1mOffload: Hash Lookup[0m  
+RedN outperforms one-sided and two-sided RDMA in get operations. It achieves near-ideal latency, parallelizes bucket lookups, and reaches 1M ops/sec on dual-port RNICs.
+
+[1mOffload: List Traversal[0m  
+RedN supports efficient traversal of linked lists with break statements. Compared to baselines, it halves latency and reduces WR usage.
+
+[1mUse Case: Accelerating Memcached[0m  
+By offloading get operations, RedN provides 1.7×–2.6× speedups. It eliminates the need for CPU polling and avoids the inefficiencies of kernel-bypass stacks like VMA.
+
+[1mUse Case: Performance Isolation[0m  
+RedN avoids latency spikes under contention by running offloads entirely on RNICs. It shows up to 35× improvement in 99th percentile latency with increasing concurrent writers.
+
+[1mUse Case: Failure Resiliency[0m  
+RedN enables service continuity even under process or OS crashes. It preserves WR state using an empty parent process or remains functional in kernel panics.
+
+[1m6. Discussion[0m  
+RedN may face client scalability issues but solutions like DC QPs exist. Future RNIC designs could offer native support for WR cache access. RedN also opens avenues for RDMA-enabled socket applications via libraries like rsocket.
+
+[1m7. Conclusion[0m  
+RedN proves that commodity RNICs are Turing complete. It introduces a framework that enables efficient and resilient offloads without hardware changes. RedN achieves substantial gains in latency, performance isolation, and availability.
+
+[1mAppendix A: Turing Completeness Sketch[0m  
+RedN satisfies the three requirements of Turing completeness: arbitrary memory access, conditionals, and loops. RDMA emulates the x86 `mov` instruction via WRITE, CAS, and ADD, and supports nontermination using WQ recycling.

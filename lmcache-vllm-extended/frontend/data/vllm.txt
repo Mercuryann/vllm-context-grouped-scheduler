@@ -1,0 +1,60 @@
+Efficient Memory Management for Large Language Model Serving with PagedAttention  
+Authors: Woosuk Kwon, Zhuohan Li, Siyuan Zhuang, Ying Sheng, Lianmin Zheng, Cody Hao Yu, Joseph E. Gonzalez, Hao Zhang, Ion Stoica
+
+[1mAbstract[0m  
+vLLM introduces PagedAttention, a novel attention mechanism inspired by virtual memory paging, enabling efficient key-value (KV) cache management for large language model (LLM) serving. This allows for near-zero memory waste and flexible KV cache sharing. Built atop PagedAttention, vLLM achieves up to 4× throughput improvements over FasterTransformer and Orca, especially with large models and complex decoding.
+
+[1m1. Introduction[0m  
+LLM serving is costly and memory-bound. The main bottleneck is managing dynamic KV caches. Existing systems allocate contiguous memory, resulting in internal and external fragmentation. vLLM proposes PagedAttention to manage KV cache more like OS paging, improving batching and reducing cost.
+
+[1m2. Background[0m  
+Covers Transformers, KV cache role in autoregressive generation, and batching challenges. Batching must handle asynchronous arrivals and sequence length variance. Iteration-level scheduling helps reduce queueing and padding inefficiencies.
+
+[1m3. Memory Challenges in LLM Serving[0m  
+Identifies three major memory issues in LLMs:  
+- Large KV cache per request  
+- Inability to share cache across outputs or sequences  
+- Fragmentation due to static, contiguous allocation  
+These lead to inefficient GPU memory usage and limit throughput.
+
+[1m4. Method[0m  
+[1m4.1 PagedAttention[0m  
+Enables KV cache to be divided into small, fixed-size blocks (KV blocks), stored non-contiguously.
+
+[1m4.2 KV Cache Manager[0m  
+Inspired by OS virtual memory: separates logical vs physical KV blocks using block tables, supports dynamic allocation.
+
+[1m4.3 Decoding[0m  
+Demonstrates how KV cache grows with decoding and how vLLM avoids pre-reservation using paged logic.
+
+[1m4.4 Decoding Scenarios[0m  
+Supports complex tasks like parallel sampling and beam search with memory reuse and copy-on-write. Shared prefixes are handled efficiently.
+
+[1m4.5 Scheduling and Preemption[0m  
+Implements FCFS scheduling and preemption strategies using block eviction. Supports both swapping (CPU RAM) and recomputation as recovery mechanisms.
+
+[1m4.6 Distributed Execution[0m  
+vLLM supports model parallelism (e.g., Megatron-LM) by using a centralized KV cache manager and SPMD logic.
+
+[1m5. Implementation[0m  
+Implemented using FastAPI and PyTorch with custom CUDA kernels. Supports various LLMs (GPT, OPT, LLaMA). Memory access is fused with attention computation for efficiency.
+
+[1m6. Evaluation[0m  
+vLLM achieves 2–4× throughput vs. FasterTransformer/Orca. Outperforms in basic, parallel, beam, and shared prefix decoding. Key findings:
+- Handles more batched requests
+- Memory savings up to 66% in beam search
+- Strong performance on chatbots and large models
+
+[1m7. Ablation Studies[0m  
+- [1mKernel Overhead[0m: Small latency tradeoff (~20%) vs. major memory gains  
+- [1mBlock Size[0m: 16 is optimal for balancing GPU use and fragmentation  
+- [1mRecovery[0m: Recomputation preferred for small block sizes; swapping scales with size
+
+[1m8. Discussion[0m  
+PagedAttention may not apply to compute-bound workloads, but is ideal for memory-bound LLM serving. Its kernel fusion techniques make the overhead manageable.
+
+[1m9. Related Work[0m  
+Builds on prior systems like Orca, FasterTransformer, DeepSpeed, FlashAttention, and memory optimization techniques like FlexGen and OLLA.
+
+[1m10. Conclusion[0m  
+vLLM introduces paging-inspired memory management to LLM serving. PagedAttention enables non-contiguous memory allocation and KV sharing, leading to substantial throughput improvements.

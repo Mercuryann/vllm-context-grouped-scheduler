@@ -1,0 +1,29 @@
+Making Middleboxes Someone Else’s Problem: Network Processing as a Cloud Service
+Authors: Justine Sherry, Shaddi Hasan, Colin Scott, Arvind Krishnamurthy, Sylvia Ratnasamy, Vyas Sekar
+
+[1mAbstract[0m
+This paper introduces APLOMB, a system that outsources enterprise middlebox processing to the cloud, reducing infrastructure cost and complexity. A study across 57 enterprises shows high management overhead due to diverse and numerous middleboxes. APLOMB tackles functional equivalence, low enterprise complexity, and performance. The system uses DNS-based redirection, dynamic scaling, and generic redundancy elimination to minimize latency and bandwidth overheads.
+
+[1m1. Introduction[0m
+Middleboxes enhance security and performance but incur high capital and operational costs. The authors propose shifting middlebox functionality to the cloud. This idea is supported by a large-scale study of enterprise networks. Challenges include achieving functional equivalence, minimal enterprise complexity, and low performance impact.
+
+[1m2. Middleboxes Today[0m
+Survey data from 57 enterprises reveals middleboxes are as numerous as routers and switches, with high costs and personnel requirements. The complexity of upgrades, configuration, monitoring, and training is non-trivial. Failures are often due to misconfiguration, overload, or physical issues. Elastic cloud resources can address many of these issues.
+
+[1m3. Design Space[0m
+Three properties lost when outsourcing are on-path placement, choke points, and locality. Design considerations include redirection mechanisms (bounce, IP, DNS), PoP placement, and minimizing latency. DNS-based smart redirection offers a balance between performance and control. Latency and bandwidth overheads are evaluated, with compression (APLOMB+) helping location-dependent appliances.
+
+[1m4. APLOMB: Detailed Design[0m
+The system comprises three parts: the APLOMB gateway (enterprise side), the cloud middlebox infrastructure, and the control plane. Gateways tunnel traffic, cloud nodes run middleboxes, and the controller manages policies and tunnel mapping. Registration and addressing models are explained, including protected, DNS, and legacy services.
+
+[1m5. Evaluation[0m
+APLOMB introduces negligible performance impact. Page load times, BitTorrent transfers, and VoIP jitter remain within acceptable limits. Dynamic scaling adapts to load within seconds. A case study on a large enterprise shows 60-90% of middleboxes can be outsourced. Latency penalties average ~1ms, and bandwidth costs can be reduced by 30% with APLOMB+.
+
+[1m6. Discussion[0m
+The cloud trend supports APLOMB's hybrid model. Bandwidth pricing and security remain concerns. While encryption protects against external threats, trust in cloud providers is required. The model works well with modern enterprise migration trends to hybrid and cloud-first architectures.
+
+[1m7. Related Work[0m
+APLOMB builds upon prior work in cloud computing, middlebox management, and redirection services, but is unique in proposing comprehensive cloud-based middlebox outsourcing. It differentiates from local solutions like ETTM and management-focused designs.
+
+[1m8. Conclusion[0m
+APLOMB offers a viable approach to reduce costs and complexity in enterprise networking. It can outsource the majority of middlebox functions without significant performance trade-offs and is applicable to a range of enterprise sizes.

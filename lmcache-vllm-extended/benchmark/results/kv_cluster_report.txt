@@ -1,0 +1,90 @@
+KV Cache Cluster Analysis Report
+==================================================
+
+Input: /home/jovyan/shared/ik2221_project2/lmcache-vllm-extended/benchmark/results/kv_features.npz
+Samples: 70
+Feature dim: 512
+Unique contexts: 14
+KMeans clusters: 14
+PCA 2D variance: 0.5492
+Components for 95% var: 11
+
+Metrics
+------------------------------
+  NMI: 1.0000
+  ARI: 1.0000
+  Silhouette: 0.9313
+
+Per-sample results
+------------------------------
+Context                         Cluster
+  ServerlessLLM_summary             2
+  ServerlessLLM_summary             2
+  ServerlessLLM_summary             2
+  ServerlessLLM_summary             2
+  ServerlessLLM_summary             2
+  SplitRPC-sigmetrics23             3
+  SplitRPC-sigmetrics23             3
+  SplitRPC-sigmetrics23             3
+  SplitRPC-sigmetrics23             3
+  SplitRPC-sigmetrics23             3
+  aplomb-sigcomm12                  6
+  aplomb-sigcomm12                  6
+  aplomb-sigcomm12                  6
+  aplomb-sigcomm12                  6
+  aplomb-sigcomm12                  6
+  cacheblend                       12
+  cacheblend                       12
+  cacheblend                       12
+  cacheblend                       12
+  cacheblend                       12
+  click                             4
+  click                             4
+  click                             4
+  click                             4
+  click                             4
+  metron-nsdi18                     0
+  metron-nsdi18                     0
+  metron-nsdi18                     0
+  metron-nsdi18                     0
+  metron-nsdi18                     0
+  nsdi20-paper-barbette             7
+  nsdi20-paper-barbette             7
+  nsdi20-paper-barbette             7
+  nsdi20-paper-barbette             7
+  nsdi20-paper-barbette             7
+  nsdi22-paper-reda_1               5
+  nsdi22-paper-reda_1               5
+  nsdi22-paper-reda_1               5
+  nsdi22-paper-reda_1               5
+  nsdi22-paper-reda_1               5
+  osdi24-agrawal                    8
+  osdi24-agrawal                    8
+  osdi24-agrawal                    8
+  osdi24-agrawal                    8
+  osdi24-agrawal                    8
+  osdi24-lee                       10
+  osdi24-lee                       10
+  osdi24-lee                       10
+  osdi24-lee                       10
+  osdi24-lee                       10
+  osdi24-sun-biao                  13
+  osdi24-sun-biao                  13
+  osdi24-sun-biao                  13
+  osdi24-sun-biao                  13
+  osdi24-sun-biao                  13
+  sigcomm2023_janus                11
+  sigcomm2023_janus                11
+  sigcomm2023_janus                11
+  sigcomm2023_janus                11
+  sigcomm2023_janus                11
+  sigcomm24-crux                    9
+  sigcomm24-crux                    9
+  sigcomm24-crux                    9
+  sigcomm24-crux                    9
+  sigcomm24-crux                    9
+  vllm                              1
+  vllm                              1
+  vllm                              1
+  vllm                              1
+  vllm                              1

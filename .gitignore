@@ -1,0 +1,40 @@
+# Virtual environments
+venv/
+.venv/
+env/
+.env/
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# Project-specific output artifacts (large benchmark results and plots)
+**/benchmark/results/*.json
+**/benchmark/results/*.png
+**/benchmark/results/*.npz
+*.npz
+*.png
+*.json
+*.tar.gz
+
+# IDE / Editor configuration
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.swp

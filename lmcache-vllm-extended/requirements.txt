@@ -1,0 +1,9 @@
+setuptools~=75.8.0
+torch~=2.4.0
+vllm~=0.6.2
+transformers~=4.48.2
+pydantic~=2.10.6
+typing_extensions~=4.12.2
+fastapi~=0.115.8
+openai~=1.60.2
+streamlit~=1.42.1

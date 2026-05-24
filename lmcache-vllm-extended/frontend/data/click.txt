@@ -1,0 +1,42 @@
+The Click Modular Router
+Authors: Eddie Kohler, Robert Morris, Benjie Chen, John Jannotti, and M. Frans Kaashoek
+
+[1mAbstract[0m
+Click is a flexible software architecture for building modular routers using packet processing elements. A router is composed of elements arranged in a directed graph, allowing for powerful processing pipelines. Click achieves good performance, reaching 333,000 packets/sec, and supports standards-compliant IP routing, complex queueing, and extensions like Differentiated Services.
+
+[1m1. Introduction[0m
+Traditional routers are static and inflexible. Click introduces modularity through elements representing small router functions (e.g., classification, queueing). These can be connected in various ways to build complex, extensible routers on general-purpose hardware.
+
+[1m2. Architecture[0m
+Click routers are graphs of elements. Key features:
+- Push and pull connections model asynchronous packet flows.
+- Explicit queue elements allow fine-grained control over buffering.
+- Flow-based router context helps elements locate others for interaction.
+- A declarative configuration language defines routers.
+- Kernel/user-level drivers allow deployment and testing.
+
+[1m3. An IP Router[0m
+A complete IP router is implemented using 16 elements per path. Functions include TTL decrementing, IP fragmentation, ARP querying, and ICMP error generation. Annotations carry metadata across elements (e.g., destination IP, TTL). The router is modular, extensible, and standards-compliant.
+
+[1m4. Extensions[0m
+Click supports:
+- Packet scheduling (e.g., round-robin, priority schedulers)
+- RED dropping policies with flexible queue handling
+- Weighted RED and stochastic fairness queueing
+- IP tunneling, Differentiated Services, and mobile IP
+- An Ethernet switch using IEEE 802.1d spanning tree
+
+[1m5. Kernel Environment[0m
+Click runs as a kernel thread with polling-based device drivers for high performance. Packet I/O uses DMA queues. User interaction is handled through `/proc/click`. Elements are lightweight C++ objects, easily implemented and extended.
+
+[1m6. Evaluation[0m
+Tests show that Click achieves high throughput (333K pps), efficient CPU usage, and flexible configuration with low overhead. Modularity overhead is minor (about 1µs for 16 elements). Custom elements can reduce function call costs. Differentiated Services are enforced effectively even under load.
+
+[1m7. Related Work[0m
+Click is compared with x-kernel, Scout, STREAMS, Netgraph, ALTQ, and router plugin systems. Click is unique in its modular, extensible router-focused design. Prior work focused on protocol stacks or fixed-function routers.
+
+[1m8. Conclusion[0m
+Click is an open and extensible software router architecture that combines modularity with high performance. Its flexible design supports complex router functions and is suited for research, deployment, and active networking.
+
+[1mAppendix: Element Glossary[0m
+The appendix lists 38 commonly used elements like `FromDevice`, `Queue`, `ARPQuerier`, `Classifier`, `Tee`, `RED`, and `ToDevice`, describing their roles and configurations.

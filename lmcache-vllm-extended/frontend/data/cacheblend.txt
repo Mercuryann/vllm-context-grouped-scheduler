@@ -1,0 +1,43 @@
+CacheBlend: Fast Large Language Model Serving for RAG with Cached Knowledge Fusion  
+Authors: Jiayi Yao, Hanchen Li, Yuhan Liu, Siddhant Ray, Yihua Cheng, Qizheng Zhang, Kuntai Du, Shan Lu, Junchen Jiang
+
+[1mAbstract[0m  
+CacheBlend accelerates large language model (LLM) inference in Retrieval-Augmented Generation (RAG) settings by enabling efficient reuse of precomputed key-value (KV) caches. It selectively recomputes a small fraction of tokens to preserve cross-attention, improving both speed and quality. Compared to full KV recomputation, CacheBlend reduces time-to-first-token (TTFT) by 2.2–3.3× and increases throughput by 2.8–5×, with negligible quality loss.
+
+[1m1. Introduction[0m  
+LLMs in RAG often use multiple text chunks for context, increasing prefill latency. Current cache reuse strategies (prefix or full reuse) fail to balance speed and generation quality due to missing cross-attention. CacheBlend selectively recomputes only a small portion of tokens to recover cross-attention efficiently.
+
+[1m2. Background[0m  
+LLMs generate KV caches during prefill, and traditional methods like prefix caching are limited to first-chunk reuse. Full KV reuse ignores token dependencies between chunks, causing accuracy drops.
+
+[1m3. Motivation[0m  
+Prefix caching saves little when multiple text chunks are used. Full KV reuse breaks quality due to absent cross-attention. CacheBlend proposes selective recomputation of high-KV-deviation (HKVD) tokens to restore fidelity while maintaining speed.
+
+[1m4. Fast KV Cache Fusing[0m  
+- [1m4.1 Terminology[0m: Defines KV deviation and attention deviation.  
+- [1m4.2 Selective Recompute[0m: Recomputes KV for selected tokens per layer to reduce compute load.  
+- [1m4.3 Token Selection[0m: Identifies HKVD tokens by computing attention deviation layer-wise using a gradual filtering scheme.
+
+[1m5. CacheBlend System Design[0m  
+- [1m5.1 Key Components[0m: 
+  - Loading Controller estimates recompute vs load delay to choose optimal KV recompute ratio and storage device.
+  - KV Cache Store maps input chunks to precomputed KV caches.
+  - Fusor merges caches via layer-wise recomputation.  
+- [1m5.2 Workflow[0m: Chunks are fetched, selectively recomputed, and pipelined for high efficiency.
+
+[1m6. Implementation[0m  
+Built on vLLM with 3K lines of PyTorch code. Integrates three interfaces—`fetch_kv`, `prefill_layer`, and `synchronize`—for loading, partial recompute, and layer coordination. Prefilled KV caches can be stored and retrieved from RAM or disk.
+
+[1m7. Evaluation[0m  
+- [1m7.1 Setup[0m: Evaluated on Mistral-7B, Yi-34B, and Llama-70B using datasets like 2WikiMQA, Musique, SAMSum, and MultiNews.  
+- [1m7.2 Overall Improvement[0m: Up to 3.3× faster TTFT than full recompute, significantly higher quality than full KV reuse.  
+- [1m7.3 Sensitivity Analysis[0m: CacheBlend performs consistently across different chunk lengths, sizes, batch sizes, and recompute ratios (5–18%).
+
+[1m8. Related Work[0m  
+Contrasts CacheBlend with prefix caching, PromptCache (full KV reuse), vLLM, and other RAG or context compression techniques. CacheBlend uniquely supports KV fusion with partial recomputation and is extensible to slow storage systems.
+
+[1m9. Limitations[0m  
+CacheBlend may not generalize to non-transformer architectures (e.g., Mamba, Griffin). Evaluation was not conducted on latest serving engines (e.g., DistServe), but integration is future work.
+
+[1m10. Conclusion[0m  
+CacheBlend enables reuse of cached KV chunks in non-prefix locations via selective recomputation. It maintains generation quality while drastically reducing latency and increasing throughput.

@@ -1,0 +1,44 @@
+Llumnix: Dynamic Scheduling for Large Language Model Serving  
+Authors: Biao Sun, Ziming Huang, Hanyu Zhao, Wencong Xiao, Xinyi Zhang, Yong Li, Wei Lin (Alibaba Group)
+
+[1mAbstract[0m  
+Llumnix is a dynamic scheduling system for LLM inference that supports request rescheduling across multiple model instances. It achieves better load balancing, reduces memory fragmentation, enforces request prioritization, and supports scalable auto-scaling. It introduces near-zero-downtime live migration of requests and outperforms INFaaS++ by up to 15× in latency and achieves up to 36% cost savings.
+
+[1m1. Introduction[0m  
+LLM inference workloads are heterogeneous and unpredictable. Llumnix proposes request rescheduling (like OS context switching) across model instances to balance load, mitigate fragmentation, and prioritize requests. It unifies multiple scheduling goals under a live migration mechanism.
+
+[1m2. Background[0m  
+Discusses LLM serving features like autoregressive generation, batching with dynamic memory (PagedAttention), and common challenges: latency sensitivity, unpredictability, and high memory demand. Highlights inefficiencies of static dispatch and scheduling.
+
+[1m3. Motivation[0m  
+Empirical observations show:  
+- Request preemptions are costly (up to 70% of P99 latency).  
+- Performance interference across requests exists due to compute/memory contention.  
+- Fragmentation causes queuing despite available total memory.  
+- Priorities are not respected in current systems.  
+Llumnix proposes request migration to overcome these issues.
+
+[1m4. Llumnix Design[0m  
+- [1mLive Migration[0m: Overlaps KV cache copying with computation using a staged pipeline, minimizing downtime.  
+- [1mDistributed Architecture[0m: Global scheduler dispatches at instance level; instance-local “llumlets” handle request-level decisions and migration.  
+- [1mVirtual Usage[0m: Abstracts physical memory + scheduling context to guide balancing, prioritization, and de-fragmentation.  
+- [1mPolicy[0m: Uses “freeness” (available memory scaled by batch size) to make decisions for dispatching, migration, and auto-scaling.
+
+[1m5. Implementation[0m  
+Llumnix integrates with vLLM using 3,300 lines of Python and Ray actors. Uses Gloo for KV cache transfers, with pipelining to minimize blocking. Block fusion improves data transfer. Offers fault tolerance and graceful fallback mechanisms.
+
+[1m6. Evaluation[0m  
+- [1mMigration[0m: Near-zero overhead (20–30ms) vs. 3.5s for recompute.  
+- [1mPerformance[0m: 15× lower P99 latency vs. INFaaS++; 84% reduction in preemption loss.  
+- [1mPriorities[0m: High-priority requests see 1.5× faster latency; normal requests are largely unaffected.  
+- [1mAuto-scaling[0m: Up to 36% cost saving with equivalent latency using smarter scaling decisions.  
+- [1mScalability[0m: Llumnix supports 64-instance clusters with near-zero scheduling stalls.
+
+[1m7. Related Work[0m  
+Covers prior works like vLLM, Orca, INFaaS, TritonServer, etc., emphasizing that they target single-instance or stateless models. Llumnix is unique in enabling live migration and multi-instance dynamic coordination.
+
+[1m8. Conclusion[0m  
+Llumnix provides a unified architecture for LLM inference serving, inspired by OS-level abstractions. Through migration and dynamic scheduling, it balances performance, isolation, and cost in multi-tenant GPU clusters.
+
+[1mAppendix[0m  
+Artifact and scripts are available at [https://github.com/AlibabaPAI/llumnix](https://github.com/AlibabaPAI/llumnix) for reproduction of results.

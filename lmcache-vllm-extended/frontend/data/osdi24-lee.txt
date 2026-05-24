@@ -1,0 +1,41 @@
+InfiniGen: Efficient Generative Inference of Large Language Models with Dynamic KV Cache Management  
+Authors: Wonbeom Lee, Jungi Lee, Junghwan Seo, and Jaewoong Sim
+
+[1mAbstract[0m  
+InfiniGen is a dynamic KV cache management framework for LLM inference systems, especially those that offload memory to CPUs. It avoids transferring full KV caches by speculatively prefetching only important entries. Leveraging outlier tokens and SVD-based matrix skewing, InfiniGen achieves up to 3× speedup and improved accuracy over H2O and quantization-based methods.
+
+[1m1. Introduction[0m  
+LLMs increasingly demand long context handling, which stresses GPU memory due to the size of the KV cache. Offloading to CPU helps, but PCIe bandwidth becomes a bottleneck. InfiniGen speculatively loads only important tokens using a rehearsal method and offline-optimized weights.
+
+[1m2. Background[0m  
+Covers the Transformer architecture and KV cache role. KV cache grows with sequence length and batch size. Discusses outliers in token channels and introduces SVD as a tool to skew matrices for prefetching prediction.
+
+[1m3. Motivation[0m  
+Highlights limitations of existing KV eviction strategies like H2O:
+- Attention importance shifts over time.
+- Required KV tokens differ by layer and query.
+- Fixed budgets lead to inefficiency.
+InfiniGen addresses these issues with dynamic token selection and per-layer adaptivity.
+
+[1m4. InfiniGen Design[0m  
+- [1mOverview[0m: Maintains full KV cache in CPU memory and speculatively prefetches only critical entries to GPU.
+- [1mPrefetching Opportunities[0m: Leverages similarity across layers and matrix skewing to predict key tokens efficiently.
+- [1mEfficient Prefetching[0m: Offline weight transformation (via SVD) to skew attention; online runtime speculates attention using previous layer inputs and partial weights.
+- [1mKV Cache Pool Management[0m: Implements FIFO, LRU, and counter-based strategies to evict tokens from CPU memory. Counter-based performs well with minimal overhead.
+
+[1m5. Evaluation[0m  
+- Benchmarks on OPT and Llama-2 models across datasets like WikiText, PTB, and PG-19.
+- [1mAccuracy[0m: InfiniGen maintains <1% loss vs full KV cache while using <10% of it.
+- [1mPerformance[0m: Up to 3× faster than FlexGen, and more scalable across batch sizes, model sizes, and sequence lengths.
+- [1mOverhead[0m: Prefetching and memory use are modest; speculation only 1.5× slower than ideal GPU.
+
+[1m6. Analysis and Discussion[0m  
+- [1mSensitivity[0m: Alpha (threshold for attention scores) balances latency vs accuracy; optimal at 4–5.
+- [1mPartial Weights[0m: 30% weight ratio is a good tradeoff.
+- InfiniGen’s dynamic selection adapts well to models with million-token contexts like Llama-3.
+
+[1m7. Related Work[0m  
+Compared to vLLM, H2O, FlexGen, and other caching and quantization approaches, InfiniGen uniquely reduces data transfer without accuracy loss. Complements kernel fusion and attention sparsity works.
+
+[1m8. Conclusion[0m  
+InfiniGen dynamically manages KV cache by exploiting attention input similarities and skewed matrix transformations. It avoids unnecessary data transfers and adapts across batch sizes, model sizes, and sequence lengths. It scales well and offers better performance and accuracy preservation than prior systems.
